@@ -209,7 +209,7 @@ public final class OpenSamlAuthenticationProvider implements AuthenticationProvi
 
 	private Converter<Saml2AuthenticationToken, SignatureTrustEngine> signatureTrustEngineConverter = new SignatureTrustEngineConverter();
 
-	private Converter<Saml2AuthenticationToken, Decrypter> decrypterConverter = new DecrypterConverter();
+	private Converter<Saml2AuthenticationToken, ? extends Decrypter> decrypterConverter = new DecrypterConverter();
 
 	/**
 	 * Creates an {@link OpenSamlAuthenticationProvider}
@@ -265,6 +265,23 @@ public final class OpenSamlAuthenticationProvider implements AuthenticationProvi
 	public void setAssertionValidator(Converter<AssertionToken, Saml2ResponseValidatorResult> assertionValidator) {
 		Assert.notNull(assertionValidator, "assertionValidator cannot be null");
 		this.assertionValidator = assertionValidator;
+	}
+
+	/**
+	 * Set the {@link Converter} to use for decrypting the {@link Assertion} in the SAML
+	 * 2.0 Response.
+	 *
+	 * You can still invoke the default decrypter by not using this setter.
+	 *
+	 * This setter should be used for when you do not have the private key and want to do the decryption remotely,
+	 * like for example an HSM or a cloud Vault service.
+	 *
+	 * @param decrypterConverter
+	 * @since 5.4
+	 */
+	public void setDecrypterConverter(Converter<Saml2AuthenticationToken, ? extends Decrypter> decrypterConverter) {
+		Assert.notNull(decrypterConverter, "decrypterConverter cannot be null");
+		this.decrypterConverter = decrypterConverter;
 	}
 
 	/**
